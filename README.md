@@ -79,4 +79,3 @@ ESP32 projects (like the one in `ESP32/Template_ESP32`) do not use the standard 
 
 ---
 *Developed by [Julian Duque](https://github.com/julian-duque-alayon)*
-*Developed by [Julian Duque](https://github.com/julian-duque-alayon)*
