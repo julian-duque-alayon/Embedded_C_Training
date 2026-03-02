@@ -1,41 +1,58 @@
-# 🏗️ Nucleo-F413ZH Project Template
+# 🏗️ Nucleo-F413ZH Master Template
 
-This template provides a professional, lightweight starting point for developing on the **STM32F413ZH** microcontroller using **Low-Layer (LL) Drivers** and **CMake**.
+![Project Header](./docs/img/header.png)
 
-## 🚀 Quick Start (WSL/Linux Terminal)
+This is the **Gold Standard** starting point for STM32F413ZH development. It is a professional, lightweight blueprint that bypasses the weight of specialized IDEs, focusing on **Direct Hardware Control** and **CMake-driven** portability.
 
-### 1. Build the Project
-Run the following commands within this directory:
+---
 
+## 💎 Key Features
+*   **Minimalist Core**: Strips away HAL overhead in favor of **Low-Layer (LL) Drivers**.
+*   **System Integrity**: Includes `syscalls.c` to enable standard C library functions (I/O, memory).
+*   **Professional Toolchain**: Custom CMake architecture for cross-compiling on ANY machine.
+*   **IDE Ready**: Fully configured `.vscode` tasks for one-click Flash and Debug.
+
+---
+
+## 📂 The Blueprint
+To understand **why** this project is organized this way and the **origin** of every single file (Drivers, Startup, App, etc.), see our central guide:
+
+👉 **[Standard Project Structure Explainer](../../PROJECT_STRUCTURE.md)**
+
+---
+
+## 🛠️ The Workflow
+
+### 1. Configure & Build
+**Option A: VS Code (Status Bar)**
+1.  Select Kit (`Ctrl + Shift + P` -> `CMake: Select a Kit`) -> `arm-none-eabi`.
+2.  Click **Build** button in the bottom status bar.
+
+**Option B: Terminal**
 ```bash
-# Configure the build system
-cmake -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=cmake/stm32_gcc.cmake
-
-# Compile and generate binaries
+cmake -B build -G Ninja
 cmake --build build
 ```
 
-### 2. Flash the Microcontroller
-Ensure the hardware is attached to WSL via `usbipd` (see [STM32/README.md](../README.md)), then run:
+---
 
+### 2. Flash & Test
+**Option A: VS Code (Recommended)**
+1.  Press `Ctrl + Shift + P`.
+2.  Type `Tasks: Run Task`.
+3.  Select **Flash device**.
+
+**Option B: Terminal (OpenOCD)**
 ```bash
 openocd -f interface/stlink.cfg -f target/stm32f4x.cfg -c "program build/Nucleo_F413_Template.elf verify reset exit"
 ```
 
-## 📂 Project Highlights
+---
 
-- **Drivers**: Utilizes exclusively **STM32 Low-Layer (LL)** drivers for minimal overhead and direct hardware control.
-- **Boot**: Includes official CMSIS startup code and vector table in the `Startup/` folder.
-- **Linker**: Pre-configured `STM32F413XX_FLASH.ld` for 1.5MB Flash and 320KB RAM.
-- **Automation**: The build process automatically generates a `.hex` file and prints the output memory size.
-
-## 🔧 Project Structure
-
-- `App/`: Contains your application logic (`main.c`, interrupts).
-- `Drivers/`: Peripheral drivers (CMSIS & STM32 LL).
-- `Startup/`: Device-specific assembly startup code.
-- `cmake/`: Toolchain configuration for cross-compiling.
-- `CMakeLists.txt`: Main build logic.
+## � Maintenance
+*   **Modifying Pinout**: Open the `Template.ioc` in **STM32CubeMX**.
+*   **Updating Drivers**: Replace the contents of the `Drivers/` folder from the latest ST Firmware Package.
 
 ---
-*Back to [STM32 Modules](../README.md)*
+[⬅️ Back to STM32 Modules](../README.md)
+

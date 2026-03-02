@@ -7,6 +7,7 @@ project(Nucleo_F413_Template C ASM)
 
 # 2. Compiler Definitions (Crucial for headers)
 add_definitions(-DSTM32F413xx -DUSE_FULL_LL_DRIVER)
+add_compile_options(-Wno-unused-parameter)
 
 # 3. Include Directories
 include_directories(
