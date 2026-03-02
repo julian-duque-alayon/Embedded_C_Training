@@ -11,6 +11,13 @@
 #include <stdio.h>    /* printf()                                           */
 #include <assert.h>   /* static_assert() — compile-time checks             */
 
+/* ── Global Variables ──────────────────────────────────────────────────── */
+/* 
+ * uwTick is required by stm32f4xx_it.c for the SysTick_Handler. 
+ * Since we are in a bare-metal state, we define it here.
+ */
+volatile uint32_t uwTick = 0;
+
 /* ── Compile-Time Validation (runs BEFORE the program even starts) ──────
  *
  *  static_assert(condition, "message if false");
