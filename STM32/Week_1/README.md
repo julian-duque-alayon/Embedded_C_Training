@@ -78,6 +78,16 @@ If by Sunday your board shows a correct sum and the red LED activates only when 
 
 ---
 
+### 📓 Daily Notes
+
+Detailed code explanations and concept breakdowns for each day live here:
+
+| Day | Topic | File |
+| :--- | :--- | :--- |
+| Monday 02/03 | Fixed-width types, `sizeof`, `static_assert` | [day1_type_sizes.md](./docs/day1_type_sizes.md) |
+
+---
+
 ### 🛠️ Quick Build Guide
 
 #### 1. Build

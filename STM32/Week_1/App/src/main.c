@@ -1,43 +1,65 @@
-#include "stm32f4xx_ll_bus.h"
-#include "stm32f4xx_ll_gpio.h"
-#include "stm32f4xx_ll_utils.h"
-#include "stm32f4xx_ll_rcc.h"
-#include "stm32f4xx_ll_system.h"
+/**
+ * @file    main.c
+ * @brief   Week 1 - Action 2: Type Size Validation
+ *
+ * Goal: Verify that fixed-width integer types and float have the
+ *       expected sizes on this platform (STM32 ARM Cortex-M).
+ */
 
-/* Global tick variable for LL_mDelay */
-__IO uint32_t uwTick = 0;
+/* ── Includes ──────────────────────────────────────────────────────────── */
+#include <stdint.h>   /* uint8_t, uint16_t, uint32_t                       */
+#include <stdio.h>    /* printf()                                           */
+#include <assert.h>   /* static_assert() — compile-time checks             */
 
-void SystemClock_Config(void);
+/* ── Compile-Time Validation (runs BEFORE the program even starts) ──────
+ *
+ *  static_assert(condition, "message if false");
+ *
+ *  If the condition is false, the compiler STOPS and shows the message.
+ *  This is the BEST kind of check for embedded: zero runtime cost.
+ */
+static_assert(sizeof(uint8_t)  == 1, "uint8_t must be 1 byte");
+static_assert(sizeof(uint16_t) == 2, "uint16_t must be 2 bytes");
+static_assert(sizeof(uint32_t) == 4, "uint32_t must be 4 bytes");
+static_assert(sizeof(float)    == 4, "float must be 4 bytes");
 
-int main(void) {
-    // 1. Setup the system clock (Essential)
-    SystemClock_Config();
+/* ── Function Prototype ─────────────────────────────────────────────────── */
+void printTypeSizes(void);
 
-    // 2. Enable GPIO Clock (Nucleo-144 Blue LED is usually PB7)
-    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOB);
+/* ── printTypeSizes ─────────────────────────────────────────────────────
+ *
+ *  Runtime validation: prints the actual size and confirms expectation.
+ *  Uses printf() — on bare-metal STM32 this requires semihosting or
+ *  a UART redirect. On a hosted environment (Linux/PC) it prints normally.
+ */
+void printTypeSizes(void)
+{
+    printf("=== Type Size Validation ===\n");
 
-    // 3. Configure Pin PB7 as Output
-    LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_14, LL_GPIO_MODE_OUTPUT);
-    LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_7, LL_GPIO_MODE_OUTPUT);
+    /* sizeof() returns size_t; we cast to int for simple printf format    */
+    printf("uint8_t  : %d byte(s)  - expected 1  - %s\n",
+           (int)sizeof(uint8_t),
+           sizeof(uint8_t) == 1 ? "OK" : "FAIL");
 
-    while (1) {
-        LL_GPIO_TogglePin(GPIOB, LL_GPIO_PIN_14);
-        LL_mDelay(500); // Only works if SysTick is configured
-        LL_GPIO_TogglePin(GPIOB, LL_GPIO_PIN_7);
-        LL_mDelay(500); // Only works if SysTick is configured
-    }
+    printf("uint16_t : %d byte(s)  - expected 2  - %s\n",
+           (int)sizeof(uint16_t),
+           sizeof(uint16_t) == 2 ? "OK" : "FAIL");
+
+    printf("uint32_t : %d byte(s)  - expected 4  - %s\n",
+           (int)sizeof(uint32_t),
+           sizeof(uint32_t) == 4 ? "OK" : "FAIL");
+
+    printf("float    : %d byte(s)  - expected 4  - %s\n",
+           (int)sizeof(float),
+           sizeof(float) == 4 ? "OK" : "FAIL");
+
+    printf("============================\n");
 }
 
-void SystemClock_Config(void) {
-    // Basic internal clock config (HSI)
-    LL_FLASH_SetLatency(LL_FLASH_LATENCY_0);
-    LL_RCC_HSI_Enable();
-    while(LL_RCC_HSI_IsReady() != 1);
-    LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
-    LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
-    LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
-    LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_HSI);
-    while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_HSI);
-    LL_Init1msTick(16000000); // 16MHz
-    LL_SetSystemCoreClock(16000000);
+/* ── main ───────────────────────────────────────────────────────────────── */
+int main(void)
+{
+    printTypeSizes();
+
+    return 0;
 }
