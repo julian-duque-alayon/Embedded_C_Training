@@ -5,8 +5,9 @@ set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmake/stm32_gcc.cmake)
 
 project(Nucleo_F413_Template C ASM)
 
-# 2. Compiler Definitions (Crucial for headers)
+# 2. Compiler Definitions and Flags
 add_definitions(-DSTM32F413xx -DUSE_FULL_LL_DRIVER)
+add_compile_options(-Wno-unused-parameter)
 
 # 3. Include Directories
 include_directories(
@@ -23,7 +24,6 @@ file(GLOB_RECURSE SOURCES
     "Startup/*.s"
     "Drivers/STM32F4xx_HAL_Driver/Src/*_ll_*.c" # Only LL sources
 )
-
 # 5. Executable and Linker Script
 add_executable(${PROJECT_NAME}.elf ${SOURCES})
 

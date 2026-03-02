@@ -11,6 +11,7 @@ This is the atomic planning for your **Week 1**. During this period, we will sto
 *   **What will be done:** You will master **data anatomy** and the **linear memory map** of the STM32F413ZH [RM0430, 2.2]. You will learn to configure "bare-metal" hardware without external libraries, using only raw pointers and bit-level operations.
 *   **What will be achieved:** By the end, you will have built a physical "Carry Calculator" that detects logical errors (overflow) and signals them via hardware, validating your logic with Unit Testing (TDD).
 *   **Master Plan Alignment:** This is the cornerstone of **Phase I (Software and Silicon Engineering)**. An architect cannot design robust systems without understanding how the compiler organizes data in SRAM.
+*   **Detailed Blueprint:** For a file-by-file breakdown of why everything exists, see [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md).
 
 ---
 
@@ -80,12 +81,21 @@ If by Sunday your board shows a correct sum and the red LED activates only when 
 ### 🛠️ Quick Build Guide
 
 #### 1. Build
+**Option A: VS Code (Recommended)**
+*   Click the **Build** button in the bottom status bar.
+
+**Option B: Terminal**
 ```bash
-cmake -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=cmake/stm32_gcc.cmake
 cmake --build build
 ```
 
 #### 2. Flash
+**Option A: VS Code (Recommended)**
+1.  Press `Ctrl + Shift + P`.
+2.  Type `Tasks: Run Task`.
+3.  Select **Flash device**.
+
+**Option B: Terminal**
 ```bash
 openocd -f interface/stlink.cfg -f target/stm32f4x.cfg -c "program build/Nucleo_F413_Template.elf verify reset exit"
 ```
