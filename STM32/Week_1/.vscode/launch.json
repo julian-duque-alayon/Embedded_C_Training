@@ -14,7 +14,10 @@
                 "target/stm32f4x.cfg"
             ],
             "runToEntryPoint": "main",
-            "showDevDebugOutput": "none"
+            "showDevDebugOutput": "none",
+            "postLaunchCommands": [
+                "monitor arm semihosting enable"
+            ]
         }
     ]
 }

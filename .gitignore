@@ -32,3 +32,9 @@ Thumbs.db
 *.gcov
 *.gcda
 *.gcno
+
+# --- Cache & Indexers ---
+**/.cache/
+.clangd/
+**/CMakeFiles/
+**/CMakeCache.txt

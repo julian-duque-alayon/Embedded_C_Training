@@ -64,8 +64,11 @@ void printTypeSizes(void)
 }
 
 /* ── main ───────────────────────────────────────────────────────────────── */
+extern void initialise_monitor_handles(void);
+
 int main(void)
 {
+    initialise_monitor_handles();
     printTypeSizes();
 
     return 0;

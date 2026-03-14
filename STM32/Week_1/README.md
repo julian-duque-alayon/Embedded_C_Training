@@ -98,4 +98,36 @@ Forget `printf`. Your hardware is your interface.
     ```
 
 ---
+
+### 🎙️ Debugging: The Semihosting Magic
+By default, an STM32 doesn't have a screen or a terminal. When you call `printf()`, the poor microcontroler has no idea where to send that text. To solve this without adding extra hardware (like UART cables), we use **Semihosting**.
+
+#### ⚡ What is Semihosting?
+It's a mechanism that lets the STM32 "borrow" the keyboard and screen of your PC. When the code hits a `printf`:
+1. The STM32 pauses for a microsecond.
+2. It sends the data through the **ST-LINK** debugger cable.
+3. **OpenOCD** (on your PC) catches that data and prints it in your VS Code **Debug Console**.
+
+#### 🛠️ How we implemented it:
+To make this work, we had to perform a "triple surgery" on the project:
+
+1.  **Linker Alchemy (`cmake/stm32_gcc.cmake`)**: 
+    - We swapped `nosys.specs` (which "mutes" system calls) for `rdimon.specs`.
+    - We linked `librdimon`, which contains the ARM technical wizardry to talk back to the debugger.
+    - We added a `-DSEMIHOSTING` flag so our code knows when this mode is active.
+
+2.  **The Peacekeeper (`CMakeLists.txt` & `syscalls.c`)**: 
+    - Since `librdimon` and our default `syscalls.c` both try to define how `printf` works, they would normally fight (Multiple Definition Error). 
+    - We modified CMake to **exclude** `syscalls.c` whenever Semihosting is active, letting the professional library take the lead.
+
+3.  **The "Wake Up" Call (`main.c`)**:
+    - We added `initialise_monitor_handles()`. Think of this as turning on the "intercom" between the STM32 and your PC before anyone starts talking.
+
+4.  **The Ear on the PC (`launch.json`)**:
+    - We told VS Code to send the command `monitor arm semihosting enable` to the debugger automatically. Without this, the PC would ignore the STM32's shouts.
+
+> [!TIP]
+> **Where are my prints?** They won't appear in the standard Terminal. Look for the **DEBUG CONSOLE** tab next to it while the debugger is running!
+
+---
 *Back to [STM32 Modules](../README.md)*

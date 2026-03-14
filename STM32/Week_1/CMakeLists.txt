@@ -18,12 +18,17 @@ include_directories(
 )
 
 # 4. Source Files Selection
-# We only grab the LL files and the startup/system files.
 file(GLOB_RECURSE SOURCES 
     "App/src/*.c"
     "Startup/*.s"
-    "Drivers/STM32F4xx_HAL_Driver/Src/*_ll_*.c" # Only LL sources
+    "Drivers/STM32F4xx_HAL_Driver/Src/*_ll_*.c"
 )
+
+# If Semihosting is enabled, we MUST NOT compile our own syscalls.c
+# because it will conflict with librdimon.
+if(SEMIHOSTING)
+    list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/App/src/syscalls.c")
+endif()
 # 5. Executable and Linker Script
 add_executable(${PROJECT_NAME}.elf ${SOURCES})
 
