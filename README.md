@@ -1,81 +1,143 @@
-# 🛰️ Embedded C Training
+# 🛰️ Mission Control: Embedded C Training
 
-Embedded systems training laboratory for **STM32** and **ESP32** microcontrollers.
+Welcome to the **Embedded C Training Laboratory**. This is where code meets copper, and logic controls electricity. We're focusing on the **STM32** and **ESP32** ecosystems, moving from "Hello World" (blinking LEDs) to professional modular firmware engineering.
 
----
-
-## 📂 Repository Structure
-
-### [STM32](./STM32)
-Projects for the STM32 family, specifically focused on the **NUCLEO-F413ZH** board.
-- **[Template_NucleoF413ZH](./STM32/Template_NucleoF413ZH)**: Base project with CMake and Low-Layer (LL) Drivers.
-- **[Standard Project Structure](./PROJECT_STRUCTURE.md)**: Detailed explanation of the directory and file population for STM32 projects.
-
-### [ESP32](./ESP32)
-Projects for **ESP32** (Wi-Fi/Bluetooth IoT systems).
-- **[Template](./ESP32/Template)**: Base structure for ESP-IDF / Arduino projects.
+> [!IMPORTANT]
+> **Safety First:** No microcontrollers were harmed in the making of this repository. Let's keep it that way! 🧨 (until now)
 
 ---
 
-## 🛠️ Development Workflow (Professional Modular Setup)
+## 🗺️ The Exploration Map
 
-To avoid conflicts between different microcontrollers (STM32 vs ESP32) and different project versions, this repository uses a **Modular Project Model**.
+Navigate through the different architectures and templates available:
 
-### 💡 The Core Rule: Open the Subfolder, Not the Root
-Do **not** open the entire `Embedded_C_Training` folder in VS Code. Instead:
-1.  Go to **File > Open Folder...**
-2.  Navigate into the specific project you want to work on (e.g., `STM32/Week_1` or `STM32/Template_NucleoF413ZH`).
-3.  VS Code will now use the local `.vscode` configuration specifically tuned for that project.
-
----
-
-### 1. Initial Setup (The "Big Three" Commands)
-The first time you open a project folder, or if you change the compiler, you must configure the environment:
-1.  **Select Kit**: Press `Ctrl + Shift + P` -> **`CMake: Select a Kit`**. Choose your ARM compiler (e.g., `GCC for arm-none-eabi`).
-2.  **Select Variant**: Press `Ctrl + Shift + P` -> **`CMake: Select Variant`**. Choose **`Debug`** (enables breakpoints and variable inspection).
-3.  **Configure**: Press `Ctrl + Shift + P` -> **`CMake: Configure`**. This scans the source files and generates the build system (Ninja).
+| Target | Description | Shortcut |
+| :--- | :--- | :--- |
+| **STM32** | Hardcore ARM Cortex-M4 (NUCLEO-F413ZH). LL Drivers & CMake. | [Go to STM32](./STM32) |
+| **ESP32** | IoT Powerhouse (Wi-Fi/Bluetooth). ESP-IDF & Arduino. | [Go to ESP32](./ESP32) |
+| **Standard** | Learn how we organize things here (Standard Structure). | [Read Structure](./PROJECT_STRUCTURE.md) |
 
 ---
 
-### 2. Building & Compiling
-Once configured, you have two ways to compile:
-*   **IDE (Status Bar)**: Click the **Build** button (or the gear icon) at the very bottom of the VS Code window.
-*   **Terminal**: 
-    ```bash
-    cmake --build build
-    ```
+## 🚀 Ignition: Linux Environment Setup
 
----
+Before we flash any silicon, we need to sharpen our tools. Choose your distribution and run the magic commands:
 
-### 3. Flashing & Debugging (The "Play" Button)
-We use **OpenOCD** and the **Cortex-Debug** extension to talk to the Nucleo board.
-*   **To Debug**: Press **F5** (or go to the "Run and Debug" side tab and click the green arrow).
-    *   This will automatically **Compile**, **Flash**, and **Launch** the debugger.
-    *   The code will pause at the start of `main()`, allowing you to step through line-by-line.
-*   **To Quick-Flash (No Debug)**: Press **`Ctrl + Shift + B`** and select **`Flash Nucleo`**. This is a fast way to just update the code on the board without starting a full debug session.
+### 🛠️ Step 1: Install the Arsenal
 
----
+<details>
+<summary><b>Arch / Manjaro (The User's Choice) 🐧</b></summary>
 
-### 4. Direct Terminal Control (Troubleshooting)
-If the IDE buttons fail or you are on a system without the extension:
-#### **A. Manual Build**
 ```bash
-cmake -B build -G Ninja
-cmake --build build
+sudo pacman -S --needed \
+    arm-none-eabi-gcc arm-none-eabi-newlib \
+    arm-none-eabi-binutils arm-none-eabi-gdb \
+    cmake ninja openocd stlink
 ```
-#### **B. Manual Flash (via OpenOCD)**
-From the project root:
+</details>
+
+<details>
+<summary><b>Ubuntu / Debian 🐧</b></summary>
+
+```bash
+sudo apt update && sudo apt install -y \
+    gcc-arm-none-eabi binutils-arm-none-eabi \
+    libnewlib-arm-none-eabi gdb-multiarch \
+    cmake ninja-build openocd stlink-tools
+```
+</details>
+
+<details>
+<summary><b>Fedora 🐧</b></summary>
+
+```bash
+sudo dnf install \
+    arm-none-eabi-gcc-cs arm-none-eabi-binutils-cs \
+    arm-none-eabi-newlib arm-none-eabi-gdb \
+    cmake ninja-build openocd stlink
+```
+</details>
+
+### 🔑 Step 2: Gaining "Superpowers" (Permissions)
+
+To talk to your hardware without being `root`, you need to join the inner circle:
+
+*   **Arch/Manjaro**: `sudo usermod -aG uucp $USER`
+*   **Others**: `sudo usermod -aG dialout,plugdev $USER`
+
+> [!CAUTION]
+> **Logout/Restart!** Your terminal won't know you're famous (part of the group) until you log back in.
+
+### 🔌 Step 3: The Secret Handshake (Is it connected?)
+
+Run these to ensure your Linux kernel is talking to your Nucleo board:
+1.  **USB Peek**: `lsusb` → Look for `STMicroelectronics ST-LINK/V2.1`.
+2.  **Port Scan**: `ls /dev/ttyACM*` → Should see `/dev/ttyACM0`.
+3.  **The Probe**: `st-info --probe` → The ultimate truth. If it returns a Serial ID, you're golden!
+
+---
+
+## 💻 The Toolbox (VS Code Extensions)
+
+To make your life 100x easier, install these **Mandatory** extensions:
+1. 🛡️ **C/C++** (`ms-vscode.cpptools`)
+2. 🔨 **CMake Tools** (`ms-vscode.cmake-tools`)
+3. 🐞 **Cortex-Debug** (`marus25.cortex-debug`)
+
+---
+
+## ⚙️ The Flight Manual: Development Workflow
+
+We use a **Professional Modular Setup**. No messy root folders, just clean projects.
+
+### 💡 The Golden Rule: Focus!
+**Do NOT open the root `Embedded_C_Training` folder in VS Code.**
+Instead, open the *specific project* folder (e.g., `STM32/Template_NucleoF413ZH`). This triggers the local config and makes everything "just work".
+
+---
+
+### 🛫 Pre-Flight Checklist (The "Big Three")
+
+The first time you enter a project, perform these incantations (`Ctrl + Shift + P`):
+1.  **Select Kit**: Choose `GCC for arm-none-eabi`.
+2.  **Select Variant**: Choose `Debug` (unless you like guessing why your code crashed).
+3.  **Configure**: Run `CMake: Configure` to generate the build files.
+
+---
+
+### 🚢 Building & Launching
+
+*   **Build**: Click the **Build** button in the status bar or run `cmake --build build`.
+*   **The "Magic" Button (F5)**: Pressing **F5** will **Compile**, **Flash**, and start a **Debug** session automatically. 
+*   **Quick Flash**: Press `Ctrl + Shift + B` -> Select `Flash Nucleo`. Fast and effective.
+
+---
+
+## 📟 Terminal Fu (For the Hardcore)
+
+If the IDE is acting up, use the raw power of the terminal:
+
+**A. Manual Build:**
+```bash
+cmake -B build -G Ninja && cmake --build build
+```
+
+**B. Manual Flash (OpenOCD):**
 ```bash
 openocd -f interface/stlink.cfg -f target/stm32f4x.cfg -c "program build/Nucleo_F413_Template.elf verify reset exit"
 ```
 
 ---
 
-### 5. ESP32 Projects
-ESP32 projects (like the one in `ESP32/Template_ESP32`) do not use the standard ARM CMake tools. They use the **ESP-IDF** framework. 
+## ⚡ The ESP32 Realm
+
+ESP32 projects are different beasts. They don't use the ARM tools.
 1. Open the ESP32 folder directly.
-2. Use the **ESP-IDF icon** in the sidebar.
-3. Use `idf.py build`, `idf.py flash`, and `idf.py monitor` in the terminal.
+2. Use the **ESP-IDF extension** icons.
+3. Terminal commands: `idf.py build`, `idf.py flash`, `idf.py monitor`.
 
 ---
-*Developed by [Julian Duque](https://github.com/julian-duque-alayon)*
+
+<p align="center">
+  <i>Developed with ❤️ by <a href="https://github.com/julian-duque-alayon">Julian Duque</a></i>
+</p>
