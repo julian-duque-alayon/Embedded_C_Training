@@ -35,26 +35,17 @@ To compile the code, you need a basic toolchain and build system. For hardware-s
 
 #### **Arch Linux / Manjaro**
 ```bash
-sudo pacman -S --needed \
-    base-devel git cmake ninja \
-    arm-none-eabi-gcc arm-none-eabi-newlib arm-none-eabi-binutils \
-    python python-pip
+sudo pacman -S --needed base-devel git cmake ninja python python-pip
 ```
 
 #### **Ubuntu / Debian / Linux Mint**
 ```bash
-sudo apt update && sudo apt install -y \
-    build-essential git cmake ninja-build \
-    gcc-arm-none-eabi libnewlib-arm-none-eabi binutils-arm-none-eabi \
-    python3 python3-pip
+sudo apt update && sudo apt install -y build-essential git cmake ninja-build python3 python3-pip
 ```
 
 #### **Fedora**
 ```bash
-sudo dnf install \
-    gcc gcc-c++ make git cmake ninja-build \
-    arm-none-eabi-gcc-cs arm-none-eabi-newlib arm-none-eabi-binutils-cs \
-    python3 python3-pip
+sudo dnf install gcc gcc-c++ make git cmake ninja-build python3 python3-pip
 ```
 
 ---
@@ -77,7 +68,7 @@ To enable full compilation capabilities within VS Code, you need these essential
 ### C/C++ Extension Pack (Microsoft)
 This is the core engine for C development:
 *   **C/C++**: Provides IntelliSense, code navigation, and syntax highlighting.
-*   **CMake Tools**: **Critical.** It manages the project via your `CMakeLists.txt`. It allows you to select your "kit" (`arm-none-eabi-gcc`) and build with one click in the bottom status bar.
+*   **CMake Tools**: **Critical.** It manages the project via your `CMakeLists.txt`. It allows you to select your target "kit" and build with one click in the bottom status bar.
 
 *(Note: For Debugging and Serial Monitoring extensions, refer to the target-specific README).*
 
@@ -91,7 +82,7 @@ Instead, open the specific project folder (e.g., `STM32/Template_NucleoF413ZH`).
 
 ### 🛫 Building
 1.  **Configure**: Press `Ctrl + Shift + P` and search for `CMake: Configure`.
-2.  **Select Kit**: Choose `GCC [version] arm-none-eabi` (or the equivalent for your target).
+2.  **Select Kit**: Choose the compiler toolchain specific to your target architecture.
 3.  **Build**: Click **Build** in the status bar or press `F7`.
 
 *(For Flashing and Debugging instructions, refer to the target-specific README).*

@@ -33,12 +33,12 @@ To understand **why** each directory exists and **where** it came from (Drivers,
 
 To detect the microcontroller, flash code, and debug, you need specific tools. 
 
-### 📦 1. Install Hardware Dependencies
-Install the ST-Link tools, OpenOCD, GDB, and USB utilities according to your Linux distro (or inside your WSL instance):
+### 📦 1. Install Toolchain & Hardware Dependencies
+Install the ARM GCC toolchain, ST-Link tools, OpenOCD, GDB, and USB utilities according to your Linux distro (or inside your WSL instance):
 
-*   **Arch/Manjaro**: `sudo pacman -S arm-none-eabi-gdb stlink openocd usbutils screen`
-*   **Ubuntu/Others**: `sudo apt install gdb-multiarch stlink-tools openocd usbutils screen`
-*   **Fedora**: `sudo dnf install arm-none-eabi-gdb-cs stlink openocd usbutils screen`
+*   **Arch/Manjaro**: `sudo pacman -S arm-none-eabi-gcc arm-none-eabi-newlib arm-none-eabi-binutils arm-none-eabi-gdb stlink openocd usbutils screen`
+*   **Ubuntu/Others**: `sudo apt install gcc-arm-none-eabi libnewlib-arm-none-eabi binutils-arm-none-eabi gdb-multiarch stlink-tools openocd usbutils screen`
+*   **Fedora**: `sudo dnf install arm-none-eabi-gcc-cs arm-none-eabi-newlib arm-none-eabi-binutils-cs arm-none-eabi-gdb-cs stlink openocd usbutils screen`
 
 ### 🔑 2. Hardware Permissions (udev Rules - Native Linux only)
 Linux protects USB devices by default. You need permission to talk to the ST-LINK without using `sudo`.

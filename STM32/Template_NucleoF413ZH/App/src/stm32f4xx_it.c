@@ -31,7 +31,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define USE_FULL_LL_DRIVER
 
 /* USER CODE END PD */
 

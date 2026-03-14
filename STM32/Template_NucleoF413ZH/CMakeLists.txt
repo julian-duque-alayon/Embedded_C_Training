@@ -8,14 +8,17 @@ project(Nucleo_F413_Template C ASM)
 
 # 2. Compiler Definitions (Crucial for headers)
 add_definitions(-DSTM32F413xx -DUSE_FULL_LL_DRIVER)
+if(USE_SEMIHOSTING)
+    add_definitions(-DSEMIHOSTING)
+endif()
 add_compile_options(-Wno-unused-parameter)
 
 # 3. Include Directories
 include_directories(
-    App/inc
-    Drivers/CMSIS/Include
-    Drivers/CMSIS/Device/ST/STM32F4xx/Include
-    Drivers/STM32F4xx_HAL_Driver/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/App/inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/CMSIS/Include
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32F4xx/Include
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/STM32F4xx_HAL_Driver/Inc
 )
 
 # 4. Source Files Selection
@@ -41,8 +44,17 @@ target_link_options(${PROJECT_NAME}.elf PRIVATE
     -Wl,--gc-sections
 )
 
+if(USE_SEMIHOSTING)
+    target_link_options(${PROJECT_NAME}.elf PRIVATE
+        --specs=rdimon.specs
+    )
+    target_link_libraries(${PROJECT_NAME}.elf PRIVATE
+        c rdimon
+    )
+endif()
+
 # 6. Post-build: Create Hex and Print Size
 add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
-    COMMAND ${CMAKE_OBJCOPY} -O ihex ${PROJECT_NAME}.elf ${PROJECT_NAME}hex
+    COMMAND ${CMAKE_OBJCOPY} -O ihex ${PROJECT_NAME}.elf ${PROJECT_NAME}.hex
     COMMAND ${CMAKE_SIZE} ${PROJECT_NAME}.elf
 )

@@ -13,13 +13,7 @@ set(CPU_FLAGS "-mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16")
 
 set(CMAKE_C_FLAGS "${CPU_FLAGS} -Wall -Wextra -fdata-sections -ffunction-sections" CACHE INTERNAL "")
 set(CMAKE_ASM_FLAGS "${CPU_FLAGS} -x assembler-with-cpp" CACHE INTERNAL "")
-
-if(USE_SEMIHOSTING)
-    set(CMAKE_EXE_LINKER_FLAGS "-Wl,--gc-sections --specs=rdimon.specs -lrdimon" CACHE INTERNAL "")
-    add_definitions(-DSEMIHOSTING)
-else()
-    set(CMAKE_EXE_LINKER_FLAGS "-Wl,--gc-sections --specs=nano.specs --specs=nosys.specs" CACHE INTERNAL "")
-endif()
+set(CMAKE_EXE_LINKER_FLAGS "-Wl,--gc-sections --specs=nano.specs" CACHE INTERNAL "")
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)

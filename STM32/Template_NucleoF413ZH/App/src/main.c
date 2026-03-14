@@ -1,25 +1,21 @@
-#include "stm32f4xx_ll_bus.h"
-#include "stm32f4xx_ll_gpio.h"
-#include "stm32f4xx_ll_utils.h"
-#include "stm32f4xx_ll_rcc.h"
-#include "stm32f4xx_ll_system.h"
+#include "main.h"
 
 /* Global tick variable for LL_mDelay */
-__IO uint32_t uwTick = 0;
+volatile uint32_t uwTick = 0;
 
 void SystemClock_Config(void);
 
-#ifdef SEMIHOSTING
+#if defined(SEMIHOSTING)
 extern void initialise_monitor_handles(void);
 #endif
 
 int main(void) {
-    // 1. Setup the system clock (Essential)
-    SystemClock_Config();
-
-#ifdef SEMIHOSTING
+#if defined(SEMIHOSTING)
     initialise_monitor_handles();
 #endif
+
+    // 1. Setup the system clock (Essential)
+    SystemClock_Config();
 
     // 2. Enable GPIO Clock (Nucleo-144 Blue LED is usually PB7)
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOB);

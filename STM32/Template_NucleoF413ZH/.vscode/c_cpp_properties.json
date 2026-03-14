@@ -4,11 +4,16 @@
             "name": "STM32-ARM",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/Template_NucleoF413ZH/App/inc",
+                "${workspaceFolder}/Template_NucleoF413ZH/Drivers/CMSIS/Include",
+                "${workspaceFolder}/Template_NucleoF413ZH/Drivers/CMSIS/Device/ST/STM32F4xx/Include",
+                "${workspaceFolder}/Template_NucleoF413ZH/Drivers/STM32F4xx_HAL_Driver/Inc",
                 "/usr/lib/gcc/arm-none-eabi/**"
             ],
             "defines": [
                 "STM32F413xx",
-                "USE_FULL_LL_DRIVER"
+                "USE_FULL_LL_DRIVER",
+                "SEMIHOSTING"
             ],
             "compilerPath": "/usr/bin/arm-none-eabi-gcc",
             "cStandard": "c11",

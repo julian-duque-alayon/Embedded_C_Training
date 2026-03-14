@@ -26,7 +26,7 @@ file(GLOB_RECURSE SOURCES
 
 # If Semihosting is enabled, we MUST NOT compile our own syscalls.c
 # because it will conflict with librdimon.
-if(SEMIHOSTING)
+if(CMAKE_C_FLAGS MATCHES "-DSEMIHOSTING")
     list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/App/src/syscalls.c")
 endif()
 # 5. Executable and Linker Script
@@ -42,6 +42,6 @@ target_link_options(${PROJECT_NAME}.elf PRIVATE
 
 # 6. Post-build: Create Hex and Print Size
 add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
-    COMMAND ${CMAKE_OBJCOPY} -O ihex ${PROJECT_NAME}.elf ${PROJECT_NAME}hex
+    COMMAND ${CMAKE_OBJCOPY} -O ihex ${PROJECT_NAME}.elf ${PROJECT_NAME}.hex
     COMMAND ${CMAKE_SIZE} ${PROJECT_NAME}.elf
 )
