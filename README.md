@@ -6,35 +6,30 @@ Welcome to the **Embedded C Training Laboratory**. This is a comprehensive repos
 
 ## 🗺️ The Exploration Map
 
-This repository is organized by architecture. Each folder contains its own self-contained environment:
+This repository is organized by architecture. Each folder contains its own self-contained environment. **For hardware details, flashing/debugging tools, and specific dependencies, please go directly to the directory you wish to use.**
 
-| Target | Description | Shortcut |
-| :--- | :--- | :--- |
-| **STM32** | ARM Cortex-M4 (Nucleo-F413ZH). Low-Layer (LL) Drivers & CMake. | [Go to STM32](./STM32) |
-| **ESP32** | IoT Powerhouse. ESP-IDF & Arduino framework support. | [Go to ESP32](./ESP32) |
-| **Standard** | Documentation on our professional project structure. | [Read Structure](./PROJECT_STRUCTURE.md) |
+| Target       | Description                                                    | Shortcut                                 |
+| :----------- | :------------------------------------------------------------- | :--------------------------------------- |
+| **STM32**    | ARM Cortex-M4 (Nucleo-F413ZH). Low-Layer (LL) Drivers & CMake. | [Go to STM32](./STM32)                   |
+| **ESP32**    | IoT Powerhouse. ESP-IDF & Arduino framework support.           | [Go to ESP32](./ESP32)                   |
+| **Standard** | Documentation on our professional project structure.           | [Read Structure](./PROJECT_STRUCTURE.md) |
 
 ---
 
-## 🚀 Environment Setup (The Heavy Lifting)
+## 🚀 Core Compilation Environment
 
-To compile and flash code to silicon, you need a specific toolchain. Choose your operating system/method below:
+To compile the code, you need a basic toolchain and build system. For hardware-specific tools (like ST-LINK detection, flashing, and debugging), please check the README inside the target directory (e.g., `STM32/README.md`).
 
 ---
 
 ### 🐧 Option A: Native Linux
-
-### 📦 1. Core Toolchain Dependencies
-
-You will need the ARM GCC compiler, flashing tools (ST-Link/OpenOCD), and build systems.
 
 #### **Arch Linux / Manjaro**
 ```bash
 sudo pacman -S --needed \
     base-devel git cmake ninja \
     arm-none-eabi-gcc arm-none-eabi-newlib arm-none-eabi-binutils \
-    arm-none-eabi-gdb stlink openocd \
-    python python-pip usbutils
+    python python-pip
 ```
 
 #### **Ubuntu / Debian / Linux Mint**
@@ -42,8 +37,7 @@ sudo pacman -S --needed \
 sudo apt update && sudo apt install -y \
     build-essential git cmake ninja-build \
     gcc-arm-none-eabi libnewlib-arm-none-eabi binutils-arm-none-eabi \
-    gdb-multiarch stlink-tools openocd \
-    python3 python3-pip usbutils
+    python3 python3-pip
 ```
 
 #### **Fedora**
@@ -51,133 +45,32 @@ sudo apt update && sudo apt install -y \
 sudo dnf install \
     gcc gcc-c++ make git cmake ninja-build \
     arm-none-eabi-gcc-cs arm-none-eabi-newlib arm-none-eabi-binutils-cs \
-    arm-none-eabi-gdb-cs stlink openocd \
-    python3 python3-pip usbutils
+    python3 python3-pip
 ```
-
----
-
-### 🔑 2. Hardware Permissions (udev Rules)
-
-Linux protects USB devices by default. You need permission to talk to the ST-LINK without using `sudo`.
-
-1.  **Add your user to groups:**
-    *   **Arch/Manjaro**: `sudo usermod -aG uucp $USER`
-    *   **Ubuntu/Others**: `sudo usermod -aG dialout,plugdev $USER`
-2.  **Install udev rules (via stlink package):**
-    The `stlink` package usually handles this, but if your device isn't recognized, you might need to reload:
-    ```bash
-    sudo udevadm control --reload-rules
-    sudo udevadm trigger
-    ```
-
-> [!IMPORTANT]
-> **Reboot or Log out & Log in** after adding yourself to groups for changes to take effect.
-
----
-
-### 🔌 3. The "Truth Check" (Verifying Hardware)
-
-Once everything is installed, plug in your Nucleo board and run these commands to verify the connection:
-
-1.  **USB Check**:
-    ```bash
-    lsusb | grep -i "STMicroelectronics"
-    ```
-    *Should show: `ID 0483:374b STMicroelectronics ST-LINK/V2.1`*
-
-2.  **Serial Port Check**:
-    ```bash
-    ls /dev/ttyACM*
-    ```
-    *Should show: `/dev/ttyACM0` (or similar).*
-
-3.  **ST-LINK Tool Check**:
-    ```bash
-    st-info --probe
-    ```
-    *If you get `command not found`, ensure `stlink` (Arch) or `stlink-tools` (Ubuntu) is installed correctly and `/usr/bin` is in your `$PATH`.*
 
 ---
 
 ### 🪟 Option B: Windows (WSL2)
 
-Developing from Windows is highly recommended using **WSL2** (Windows Subsystem for Linux). This allows you to use the same professional toolchains as in Linux while staying on Windows.
+Developing from Windows is highly recommended using **WSL2** (Windows Subsystem for Linux). 
 
-#### **1. Core Concept**
-WSL2 runs a real Linux kernel. This means that once you are inside WSL, **the installation and dependencies are identical to Native Linux**. The only difference is how the hardware is connected.
+1. **Install Dependencies**: Choose your distro (usually Ubuntu) and follow the **[Native Linux](#-option-a-native-linux)** instructions *inside* your WSL terminal.
+2. **VS Code Integration**: You MUST use the **WSL Extension**. Connect to WSL and ensure your extensions are installed in the WSL environment.
 
-#### **2. Install Dependencies**
-Choose your distro (usually Ubuntu) and follow the **[Native Linux](#-option-a-native-linux)** instructions *inside* your WSL terminal.
-
-#### **3. Hardware Bridging (The Bridge)**
-By default, WSL2 cannot access USB ports. You must "pass" the ST-Link from Windows to Linux:
-
-1.  **On Windows Host**: Install [usbipd-win](https://github.com/dorssel/usbipd-win/releases).
-2.  **On Windows Terminal (Admin)**:
-    ```powershell
-    usbipd list                         # Identify the ST-Link Bus ID
-    usbipd bind --busid <BUSID>          # Do this only the first time
-    usbipd attach --wsl --busid <BUSID>  # Run this every time you connect the board
-    ```
-3.  **On WSL Terminal**: Run `lsusb` to verify that the board is visible.
-
-#### **4. VS Code Integration**
-You MUST use the **WSL Extension**. 
-- Open VS Code, click the green icon (bottom-left) -> **Connect to WSL**.
-- **Important**: Your extensions (C/C++, CMake, Cortex-Debug) must be installed **"in WSL"** (VS Code will show a button to install them in the remote context).
+*(Note: For connecting USB hardware like ST-LINK to WSL, see the specific target directory's README).*
 
 ---
 
-## 💻 VS Code Setup & Extensions
+## 💻 VS Code Setup
 
-To enable full build, flash, and debug capabilities within VS Code, you need to install the following essential extensions:
+To enable full compilation capabilities within VS Code, you need these essential extensions:
 
-### 1. C/C++ Extension Pack (Microsoft)
+### C/C++ Extension Pack (Microsoft)
 This is the core engine for C development:
 *   **C/C++**: Provides IntelliSense, code navigation, and syntax highlighting.
 *   **CMake Tools**: **Critical.** It manages the project via your `CMakeLists.txt`. It allows you to select your "kit" (`arm-none-eabi-gcc`) and build with one click in the bottom status bar.
 
-### 2. Cortex-Debug (marus25)
-The most important tool for embedded debugging.
-*   **Debug & Flash**: Bridges VS Code with **OpenOCD** (configured in your `.vscode/launch.json`).
-*   **Live Inspection**: Sets breakpoints and lets you inspect CPU registers and variables in real-time.
-*   **One-Click Workflow**: Pressing `F5` will automatically compile, flash, and start the debug session.
-
-### 3. Serial Monitoring
-
-#### 1. Extension: Serial Monitor (Microsoft)
-*   **UART Console**: Allows you to see `printf` or serial output directly inside a VS Code tab, eliminating the need for external tools like PuTTY or Minicom.
-
-#### 2. Uso del Terminal Integrado (Método Directo)
-Si no quieres depender de extensiones que puedan fallar en un fork, usa el terminal de Antigravity directamente. Como ya confirmamos que tu ST-LINK está en /dev/ttyACM0, ejecuta:
-
-```bash
-# Instala screen si no lo tienes
-sudo pacman -S screen
-
-# Conéctate al puerto (ajusta el baudrate, ej: 115200)
-screen /dev/ttyACM0 115200
-```
-
-Para salir de screen: **Ctrl+A** y luego **K**.
-
----
-
-### 🔧 Tools vs. Extensions Mapping
-
-| Function | Under-the-hood Tool | VS Code Extension |
-| :--- | :--- | :--- |
-| **Build / Compile** | `arm-none-eabi-gcc` + `cmake` | `CMake Tools` |
-| **Flash** | `openocd` | `Cortex-Debug` |
-| **Debug** | `gdb-multiarch` (or `arm-none-eabi-gdb`) | `Cortex-Debug` |
-| **IntelliSense** | Compiler headers | `C/C++` |
-
-### 💡 Pro Tip: Peripheral Register View (SVD)
-By default, the debugger shows raw memory addresses. To see real register names (like `GPIOA`, `RCC`), you can add an **SVD file** to your `.vscode/launch.json`:
-```json
-"svdFile": "${workspaceFolder}/path/to/STM32F413.svd"
-```
+*(Note: For Debugging and Serial Monitoring extensions, refer to the target-specific README).*
 
 ---
 
@@ -187,15 +80,20 @@ By default, the debugger shows raw memory addresses. To see real register names 
 **Do NOT open the root `Embedded_C_Training` folder in VS Code.**
 Instead, open the specific project folder (e.g., `STM32/Template_NucleoF413ZH`). This ensures the `.vscode` settings for that specific architecture are loaded correctly.
 
-### 🛫 Building & Flashing
+### 🛫 Building
 1.  **Configure**: Press `Ctrl + Shift + P` and search for `CMake: Configure`.
-2.  **Select Kit**: Choose `GCC [version] arm-none-eabi`.
+2.  **Select Kit**: Choose `GCC [version] arm-none-eabi` (or the equivalent for your target).
 3.  **Build**: Click **Build** in the status bar or press `F7`.
-4.  **Flash & Debug**: Press **F5**. This will automatically compile, upload the code via OpenOCD/ST-LINK, and start the debugger.
+
+*(For Flashing and Debugging instructions, refer to the target-specific README).*
 
 ---
 
 ## ⚡ ESP32 Specifics
+
+> [!WARNING]
+> 🚧 **Work in Progress (WIP)** 🚧
+> The ESP32 section is currently under development. Detailed guides, toolchain setup, and projects are *coming soon*!
 
 ESP32 development uses the **ESP-IDF**.
 1. Open an ESP32 project folder.

@@ -29,22 +29,78 @@ To understand **why** each directory exists and **where** it came from (Drivers,
 
 ---
 
-## 🛠️ Hardware Workflow (WSL Support)
+## 🛠️ Hardware Setup & Dependencies (Flash & Debug)
 
-All STM32 boards in this repository use **ST-LINK** for debugging and flashing. Since hardware is connected via USB to Windows but we use WSL for development, follow these steps:
+To detect the microcontroller, flash code, and debug, you need specific tools. 
 
-### 1️⃣ Windows Side (PowerShell)
-Expose the USB debugger to WSL:
-```powershell
-usbipd list # Identify the BUSID
-usbipd attach --wsl --busid <YOUR_BUSID> --auto-attach
-```
+### 📦 1. Install Hardware Dependencies
+Install the ST-Link tools, OpenOCD, GDB, and USB utilities according to your Linux distro (or inside your WSL instance):
 
-### 2️⃣ WSL Side (Linux Terminal)
-Verify the connection:
+*   **Arch/Manjaro**: `sudo pacman -S arm-none-eabi-gdb stlink openocd usbutils screen`
+*   **Ubuntu/Others**: `sudo apt install gdb-multiarch stlink-tools openocd usbutils screen`
+*   **Fedora**: `sudo dnf install arm-none-eabi-gdb-cs stlink openocd usbutils screen`
+
+### 🔑 2. Hardware Permissions (udev Rules - Native Linux only)
+Linux protects USB devices by default. You need permission to talk to the ST-LINK without using `sudo`.
+
+1.  **Add your user to groups:**
+    *   **Arch/Manjaro**: `sudo usermod -aG uucp $USER`
+    *   **Ubuntu/Others**: `sudo usermod -aG dialout,plugdev $USER`
+2.  **Install udev rules:**
+    ```bash
+    sudo udevadm control --reload-rules
+    sudo udevadm trigger
+    ```
+> [!IMPORTANT]
+> **Reboot or Log out & Log in** after adding yourself to groups for changes to take effect.
+
+### 🔌 3. The "Truth Check" (Verifying Hardware)
+Plug in your Nucleo board and run:
+1.  **USB Check**: `lsusb | grep -i "STMicroelectronics"`
+2.  **Serial Port check**: `ls /dev/ttyACM*`
+3.  **ST-LINK Tool**: `st-info --probe`
+
+### 🪟 4. WSL2 Specifics (USB Bridging)
+If you use WSL2, you must expose the USB debugger from Windows to Linux:
+1.  **Windows (PowerShell Admin)**:
+    ```powershell
+    usbipd list                         # Identify the ST-Link Bus ID
+    usbipd bind --busid <BUSID>          # First time only
+    usbipd attach --wsl --busid <BUSID>  # Every time you connect
+    ```
+2.  **WSL Terminal**: Run `lsusb` to verify.
+
+---
+
+## 💻 VS Code Extensions for Debugging
+
+Make sure you have installed these in your VS Code (or WSL environment):
+
+### 1. Cortex-Debug (marus25)
+Bridges VS Code with **OpenOCD**. Allows you to press `F5` to compile, flash, and start a debug session, and inspect CPU registers.
+
+### 2. Serial Monitoring (Terminal Directo)
+Si no quieres usar extensiones pesadas para puerto serie, usa el terminal integrado:
+
 ```bash
-lsusb # Look for "STMicroelectronics ST-LINK"
+# Instala screen si no lo tienes (ej. Arch)
+sudo pacman -S screen
+
+# Conéctate al puerto
+screen /dev/ttyACM0 115200
 ```
+*Para salir de screen: **Ctrl+A** y luego **K**.*
+
+**Pro Tip (SVD):** To view peripheral registers (like `GPIOA`), add the SVD file in `.vscode/launch.json`:
+```json
+"svdFile": "${workspaceFolder}/path/to/STM32F413.svd"
+```
+
+---
+
+## ⚡ Flashing & Debugging Workflow
+1.  **Build**: (Press `F7` or click Build).
+2.  **Flash & Debug**: Press **F5**. This will upload the code via OpenOCD/ST-LINK and pause at `main()`.
 
 ---
 
